@@ -135,7 +135,7 @@ def getNextSetOfImages(form, sampling_method):
 
     return renderLabel(form)
 
-def prepairResults(form):
+def prepairResults(images, labels):
     """
     Creates the new machine learning model and gets the confidence of the machine learning model.
 
@@ -149,13 +149,16 @@ def prepairResults(form):
     render_template : flask function
         renders the appropriate webpage based on new confidence score.
     """
-    session['labels'].append(form.choice.data)
-    session['sample'] = tuple(zip(session['sample_idx'], session['labels']))
+    session['sample'] = tuple(zip(images, labels))
+
 
     if session['train'] != None:
         session['train'] = session['train'] + session['sample']
     else:
         session['train'] = session['sample']
+
+    print("training data:")
+    print(session['train'])
 
     data = getData()
     ml_model, train_img_names = createMLModel(data)
@@ -164,12 +167,14 @@ def prepairResults(form):
     session['labels'] = []
 
     if session['confidence'] < session['confidence_break']:
+        print('under threshold')
         health_pic, blight_pic = ml_model.infoForProgress(train_img_names)
-        return render_template('intermediate.html', form = form, confidence = "{:.2%}".format(round(session['confidence'],4)), health_user = health_pic, blight_user = blight_pic, healthNum_user = len(health_pic), blightNum_user = len(blight_pic))
+        return render_template('intermediate.html', confidence = "{:.2%}".format(round(session['confidence'],4)), health_user = health_pic, blight_user = blight_pic, healthNum_user = len(health_pic), blightNum_user = len(blight_pic))
     else:
+        print('above threshold')
         test_set = data.loc[session['test'], :]
         health_pic_user, blight_pic_user, health_pic, blight_pic, health_pic_prob, blight_pic_prob = ml_model.infoForResults(train_img_names, test_set)
-        return render_template('final.html', form = form, confidence = "{:.2%}".format(round(session['confidence'],4)), health_user = health_pic_user, blight_user = blight_pic_user, healthNum_user = len(health_pic_user), blightNum_user = len(blight_pic_user), health_test = health_pic, unhealth_test = blight_pic, healthyNum = len(health_pic), unhealthyNum = len(blight_pic), healthyPct = "{:.2%}".format(len(health_pic)/(200-(len(health_pic_user)+len(blight_pic_user)))), unhealthyPct = "{:.2%}".format(len(blight_pic)/(200-(len(health_pic_user)+len(blight_pic_user)))), h_prob = health_pic_prob, b_prob = blight_pic_prob)
+        return render_template('final.html', confidence = "{:.2%}".format(round(session['confidence'],4)), health_user = health_pic_user, blight_user = blight_pic_user, healthNum_user = len(health_pic_user), blightNum_user = len(blight_pic_user), health_test = health_pic, unhealth_test = blight_pic, healthyNum = len(health_pic), unhealthyNum = len(blight_pic), healthyPct = "{:.2%}".format(len(health_pic)/(200-(len(health_pic_user)+len(blight_pic_user)))), unhealthyPct = "{:.2%}".format(len(blight_pic)/(200-(len(health_pic_user)+len(blight_pic_user)))), h_prob = health_pic_prob, b_prob = blight_pic_prob)
 
 @app.route("/", methods=['GET'])
 @app.route("/index.html",methods=['GET'])
@@ -179,6 +184,15 @@ def home():
     """
     session.pop('model', None)
     return render_template('index.html')
+
+
+@app.route("/final.html",methods=['POST'])
+def checkmarks():
+    print('checkmarks!')
+    print(request.get_json())
+    labels = request.get_json()['labels']
+    images = request.get_json()['images']
+    return prepairResults(images, labels)
 
 @app.route("/label.html",methods=['GET', 'POST'])
 def label():
@@ -193,11 +207,16 @@ def label():
         return getNextSetOfImages(form, lowestPercentage)
 
     elif form.is_submitted() and session['queue'] == []:# Finished Labeling
-        return prepairResults(form)
+        print("FORM DATA::::::::")
+        print(form.choice.data)
+        print(session["sample_idx"])
+        session['labels'].append(form.choice.data)
+        return prepairResults(session["sample_idx"], session["labels"])
 
     elif form.is_submitted() and session['queue'] != []: #Still gathering labels
         session['labels'].append(form.choice.data)
         return renderLabel(form)
+
 
     return render_template('label.html', form = form)
 
