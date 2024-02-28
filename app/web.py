@@ -135,7 +135,7 @@ def getNextSetOfImages(form, sampling_method):
 
     return renderLabel(form)
 
-def prepairResults(form):
+def prepairResults(images, labels, fromLabelsPage):
     """
     Creates the new machine learning model and gets the confidence of the machine learning model.
 
@@ -149,8 +149,8 @@ def prepairResults(form):
     render_template : flask function
         renders the appropriate webpage based on new confidence score.
     """
-    session['labels'].append(form.choice.data)
-    session['sample'] = tuple(zip(session['sample_idx'], session['labels']))
+    session['sample'] = tuple(zip(images, labels))
+
 
     if session['train'] != None:
         session['train'] = session['train'] + session['sample']
@@ -165,11 +165,17 @@ def prepairResults(form):
 
     if session['confidence'] < session['confidence_break']:
         health_pic, blight_pic = ml_model.infoForProgress(train_img_names)
-        return render_template('intermediate.html', form = form, confidence = "{:.2%}".format(round(session['confidence'],4)), health_user = health_pic, blight_user = blight_pic, healthNum_user = len(health_pic), blightNum_user = len(blight_pic))
+        if fromLabelsPage:
+            return render_template('intermediate.html', confidence = "{:.2%}".format(round(session['confidence'],4)), health_user = health_pic, blight_user = blight_pic, healthNum_user = len(health_pic), blightNum_user = len(blight_pic))
+        else:
+            return jsonify({"intermediate": "yes", 'confidence': "{:.2%}".format(round(session['confidence'],4)), "health_user": health_pic, "blight_user": blight_pic, "healthNum_user": len(health_pic), "blightNum_user": len(blight_pic)})
     else:
         test_set = data.loc[session['test'], :]
         health_pic_user, blight_pic_user, health_pic, blight_pic, health_pic_prob, blight_pic_prob = ml_model.infoForResults(train_img_names, test_set)
-        return render_template('final.html', form = form, confidence = "{:.2%}".format(round(session['confidence'],4)), health_user = health_pic_user, blight_user = blight_pic_user, healthNum_user = len(health_pic_user), blightNum_user = len(blight_pic_user), health_test = health_pic, unhealth_test = blight_pic, healthyNum = len(health_pic), unhealthyNum = len(blight_pic), healthyPct = "{:.2%}".format(len(health_pic)/(200-(len(health_pic_user)+len(blight_pic_user)))), unhealthyPct = "{:.2%}".format(len(blight_pic)/(200-(len(health_pic_user)+len(blight_pic_user)))), h_prob = health_pic_prob, b_prob = blight_pic_prob)
+        if fromLabelsPage:
+            return render_template('final.html', confidence = "{:.2%}".format(round(session['confidence'],4)), health_user = health_pic_user, blight_user = blight_pic_user, healthNum_user = len(health_pic_user), blightNum_user = len(blight_pic_user), health_test = health_pic, unhealth_test = blight_pic, healthyNum = len(health_pic), unhealthyNum = len(blight_pic), healthyPct = "{:.2%}".format(len(health_pic)/(200-(len(health_pic_user)+len(blight_pic_user)))), unhealthyPct = "{:.2%}".format(len(blight_pic)/(200-(len(health_pic_user)+len(blight_pic_user)))), h_prob = health_pic_prob, b_prob = blight_pic_prob)
+        else:
+            return jsonify({"intermediate": "no", "confidence": "{:.2%}".format(round(session['confidence'],4)), "health_user": health_pic_user, "blight_user": blight_pic_user, "healthNum_user": len(health_pic_user), "blightNum_user": len(blight_pic_user), "health_test": health_pic, "unhealth_test": blight_pic, "healthyNum": len(health_pic), "unhealthyNum": len(blight_pic), "healthyPct": "{:.2%}".format(len(health_pic)/(200-(len(health_pic_user)+len(blight_pic_user)))), "unhealthyPct": "{:.2%}".format(len(blight_pic)/(200-(len(health_pic_user)+len(blight_pic_user)))), "h_prob": health_pic_prob, "b_prob": blight_pic_prob})
 
 @app.route("/", methods=['GET'])
 @app.route("/index.html",methods=['GET'])
@@ -193,11 +199,13 @@ def label():
         return getNextSetOfImages(form, lowestPercentage)
 
     elif form.is_submitted() and session['queue'] == []:# Finished Labeling
-        return prepairResults(form)
+        session['labels'].append(form.choice.data)
+        return prepairResults(session["sample_idx"], session["labels"], True)
 
     elif form.is_submitted() and session['queue'] != []: #Still gathering labels
         session['labels'].append(form.choice.data)
         return renderLabel(form)
+
 
     return render_template('label.html', form = form)
 
@@ -208,12 +216,36 @@ def intermediate():
     """
     return render_template('intermediate.html')
 
-@app.route("/final.html",methods=['GET'])
+@app.route("/intermediate/<confidence>/<health_user>/<blight_user>/<healthNum_user>/<blightNum_user>", methods=['GET'])
+def intermediatepage(confidence, health_user, blight_user, healthNum_user, blightNum_user):
+    health_user = health_user.split(",")
+    blight_user = blight_user.split(",")
+    return render_template('intermediate.html', confidence=confidence, health_user=health_user, blight_user=blight_user, healthNum_user=healthNum_user, blightNum_user=blightNum_user)
+
+@app.route("/final/<confidence>/<health_user>/<blight_user>/<healthNum_user>/<blightNum_user>/<health_test>/<unhealth_test>/<healthyNum>/<unhealthyNum>/<healthyPct>/<unhealthyPct>/<h_prob>/<b_prob>", methods=['GET'])
+def finalpage(confidence, health_user, blight_user, healthNum_user, blightNum_user, health_test, unhealth_test, healthyNum, unhealthyNum, healthyPct, unhealthyPct, h_prob, b_prob):
+    health_user = health_user.split(",")
+    blight_user = blight_user.split(",")
+    health_test = health_test.split(",")
+    unhealth_test = unhealth_test.split(",")
+    healthyNum = int(healthyNum)
+    unhealthyNum = int(unhealthyNum)
+    h_prob = [float(x) for x in h_prob.split(",")]
+    b_prob = [float(x) for x in b_prob.split(",")]
+    return render_template('final.html', confidence=confidence, health_user=health_user, blight_user=blight_user, healthNum_user=healthNum_user, blightNum_user=blightNum_user, health_test=health_test, unhealth_test=unhealth_test, healthyNum=healthyNum, unhealthyNum=unhealthyNum, healthyPct=healthyPct, unhealthyPct=unhealthyPct, h_prob=h_prob, b_prob=b_prob)
+
+@app.route("/final.html",methods=['GET', 'POST'])
 def final():
     """
     Operates the final(final.html) web page.
     """
-    return render_template('final.html')
+    if request.method == 'POST':
+        labels = request.get_json()['labels']
+        images = request.get_json()['images']
+        return prepairResults(images, labels, False)
+
+    else:
+        return render_template('final.html')
 
 @app.route("/feedback/<h_list>/<u_list>/<h_conf_list>/<u_conf_list>",methods=['GET'])
 def feedback(h_list,u_list,h_conf_list,u_conf_list):
