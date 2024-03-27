@@ -13,7 +13,7 @@
 			<button class="img mb-2 mt-4 active_button" data-toggle="tooltip" data-placement="right" title="You can train AI more by labeling more images, which may increase the Machine Learning confidence level">Keep
 				Training</button>
 			<br><br>
-			<h5 class="font-weight-normal">Confidence: {{confidence}}
+			<h5 class="font-weight-normal" name="confidence-val">Confidence: {{confidence}}
 			{% if confidence == 1 %}
 			<a href="javascript:void(0)" data-toggle="popover" data-trigger="focus" data-content="This confidence level indicates you missed all labels or you gave the same label for all training images.">
                             <span class="fa fa-info-circle" style="font-size:24px"></span></h5></a>
