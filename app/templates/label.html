@@ -28,8 +28,12 @@
 						<p>Use the buttons to label an image as "Healthy" or
 							"Unhealthy"</p>
 						<form class="form form-horizontal" action="" method="post">
-							<p>{{form.choice()}}</p>
-							<p>{{form.submit()}}</p>
+							<p>
+								{% for choice,label in form.choice.choices %}
+								<label><input type="radio" name="{{ form.choice.name}}" value="{{ choice }}" id="choice-{{label}}"> {{label}}</label><br>
+								{% endfor %}
+							</p>
+							<input type="submit" id="submit-btn" value="Submit">
 						</form><br>
 					</div>
 				</div>
@@ -38,6 +42,21 @@
 	</div>
 	<script>
     $(document).ready(function(){
+		document.addEventListener('keypress', function(event) {
+			if (event.key=="Enter") {
+				event.preventDefault()
+				document.getElementById('submit-btn').click()
+			}
+			else if (event.key.toUpperCase()=="H") {
+				event.preventDefault()
+				document.getElementById('choice-Healthy').click()
+			}
+			else if (event.key.toUpperCase()=="U") {
+				event.preventDefault()
+				document.getElementById('choice-Unhealthy').click()
+			}
+
+		})
     $('[data-toggle="popover"]').popover();
     });
     </script>
