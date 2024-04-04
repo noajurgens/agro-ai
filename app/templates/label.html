@@ -30,7 +30,7 @@
 						<form class="form form-horizontal" action="" method="post">
 							<p>
 								{% for choice,label in form.choice.choices %}
-								<label><input type="radio" name="{{ form.choice.name}}" value="{{ choice }}" id="choice-{{label}}"> {{label}}</label><br>
+								<label><input type="radio" name="{{ form.choice.name}}" value="{{ choice }}" id="choice-{{label}}" required> {{label}}</label><br>
 								{% endfor %}
 							</p>
 							<input type="submit" id="submit-btn" value="Submit">
