@@ -1,0 +1,13 @@
+digraph "app.ML_Class.Active_ML_Model.infoForProgress"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="RL";
+  Node1 [id="Node000001",label="app.ML_Class.Active\l_ML_Model.infoForProgress",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [id="edge1_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="app.ML_Class.Active\l_ML_Model.infoForResults",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classapp_1_1_m_l___class_1_1_active___m_l___model.html#a68b3ec1a3ab2d30cd3e23d6d5360bc41",tooltip=" "];
+  Node1 -> Node3 [id="edge2_Node000001_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node3 [id="Node000003",label="app.ML_Class.ML_Model.info\lForResults",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classapp_1_1_m_l___class_1_1_m_l___model.html#a3a4fbdaf7def25376bd8ec79e58ee6a8",tooltip=" "];
+}
