@@ -24,7 +24,7 @@
 		</div>
         <div class="container">
 
-			<h5 class="font-weight-light text-center text-lg-left mt-4 mb-0">Healthy(User):
+			<h5 class="font-weight-light text-center text-lg-left mt-4 mb-0">Healthy (User):
 				{{healthNum_user}} <a href="javascript:void(0)" data-toggle="popover" data-trigger="focus" data-content="Click on image to view full size"> <span class="fa fa-search"></span></a>
             </h5>
 
@@ -48,7 +48,7 @@
 		</div>
 		<div class="container">
 
-			<h5 class="font-weight-light text-center text-lg-left mt-4 mb-0">Unhealthy(User):
+			<h5 class="font-weight-light text-center text-lg-left mt-4 mb-0">Unhealthy (User):
 				{{blightNum_user}} <a href="javascript:void(0)" data-toggle="popover" data-trigger="focus" data-content="Click on image to view full size"> <span class="fa fa-search"></span></a>
             </h5>
 
@@ -72,7 +72,7 @@
 		</div>
 		<div class="container">
 
-			<h5 class="font-weight-light text-center text-lg-left mt-4 mb-0">Healthy Test(Machine): {{healthyNum}} ({{healthyPct}})
+			<h5 class="font-weight-light text-center text-lg-left mt-4 mb-0">Healthy Test (Machine): {{healthyNum}} ({{healthyPct}})
 			<a href="javascript:void(0)" data-toggle="popover" data-trigger="focus" data-content="This is the percentage of &quot;Healthy&quot; images in the image set of predicting results">
                 <span class="fa fa-info-circle" style="font-size:24px"></span></a>
 			<a href="javascript:void(0)" data-toggle="popover" data-trigger="focus" data-content="Click on image to view full size">
@@ -87,6 +87,7 @@
 						src="https://cornimagesbucket.s3.us-east-2.amazonaws.com/images_compressed/{{health_test[i]}}"
 						alt="">
 					<h6 class="font-weight-normal">Individual Confidence: {{"{:.0%}".format(h_prob[i])}}
+					<h6 class="font-weight-normal">Professional Diagnosis: {{h_true[i]}}
 					<h6 class="font-weight-normal">Disagree with the prediction?
 	                <input type="checkbox" name="healthy" value="{{health_test[i]}}" conf-value="{{h_prob[i]}}"><br>
 				</div>
@@ -102,7 +103,7 @@
 
 		<div class="container">
 
-			<h5 class="font-weight-light text-center text-lg-left mt-4 mb-0">Unhealthy Test(Machine): {{unhealthyNum}} ({{unhealthyPct}})
+			<h5 class="font-weight-light text-center text-lg-left mt-4 mb-0">Unhealthy Test (Machine): {{unhealthyNum}} ({{unhealthyPct}})
 			<a href="javascript:void(0)" data-toggle="popover" data-trigger="focus" data-content="This is the percentage of &quot;Unhealthy&quot; images in the image set of predicting results">
                             <span class="fa fa-info-circle" style="font-size:24px"></span></a>
 			<a href="javascript:void(0)" data-toggle="popover" data-trigger="focus" data-content="Click on image to view full size"> <span class="fa fa-search"></span></a></h5>
@@ -116,6 +117,7 @@
 						src="https://cornimagesbucket.s3.us-east-2.amazonaws.com/images_compressed/{{unhealth_test[i]}}"
 						alt="">
 					<h6 class="font-weight-normal">Individual Confidence: {{"{:.0%}".format(b_prob[i])}}
+					<h6 class="font-weight-normal">Professional Diagnosis: {{b_true[i]}}
 					<h6 class="font-weight-normal">Disagree with the prediction?
 	                <input type="checkbox" name="unhealthy" value="{{unhealth_test[i]}}" conf-value="{{b_prob[i]}}"><br>
 				</div>
@@ -143,112 +145,112 @@
     <a href="/">CornAI</a>
     </div>
     </footer>
-	<script>
-	var modal = document.getElementById('imgModal');
-	var images = document.querySelectorAll(".img-rounded");
-	var modalImg = document.getElementById("imgset");
-	for(let i = 0; i < images.length; i++){
-	  images[i].onclick = function(){
-	    modal.style.display = "block";
-	    modalImg.src = this.src;
-	  }
-	}
-
-	var span = document.getElementsByClassName("close")[0];
-
-	span.onclick = function(){
-	  modal.style.display = "none";
-	}
-	$(document).ready(function(){
-        $('[data-toggle="popover"]').popover();
-    });
-
-    const healthyselectedElm = document.getElementById('healthyselected');
-    const unhealthyselectedElm = document.getElementById('unhealthyselected');
-
-    function showChecked(){
-    healthyselectedElm.innerHTML = document.querySelectorAll('input[name=healthy]:checked').length;
-    unhealthyselectedElm.innerHTML = document.querySelectorAll('input[name=unhealthy]:checked').length;
-    }
-
-    document.querySelectorAll("input[name=healthy]").forEach(i=>{
-    i.onclick = () => showChecked();
-    });
-
-    document.querySelectorAll("input[name=unhealthy]").forEach(i=>{
-    i.onclick = () => showChecked();
-    });
-    
-    $(document).ready(function(){
-        $('.img').on('click', function(){
-            
-			console.log('image clicked')
-            var healthy_list = [];
-            var unhealthy_list = [];
-            var healthy_conf_list = [];
-            var unhealthy_conf_list = [];
-            
-            $("input:checkbox[name=healthy]:checked").each(function(){
-                healthy_list.push($(this).attr("value"));
-                healthy_conf_list.push($(this).attr("conf-value"));
-            });
-            if(healthy_list.length == 0){
-                healthy_list.push("null");
-            }
-            if(healthy_conf_list.length == 0){
-                healthy_conf_list.push("0");
-            }
-            
-            $("input:checkbox[name=unhealthy]:checked").each(function(){
-                unhealthy_list.push($(this).attr("value"));
-                unhealthy_conf_list.push($(this).attr("conf-value"));
-            });
-            if(unhealthy_list.length == 0){
-               unhealthy_list.push("null"); 
-            }
-            if(unhealthy_conf_list.length == 0){
-                unhealthy_conf_list.push("0");
-            }       
-
-			labels = []
-			images = []
-			for (let i = 0; i < healthy_list.length; i++) {
-				if (healthy_list[i] != "null") {
-					labels.push('B')
-					images.push(healthy_list[i])
-				}
+		<script>
+		var modal = document.getElementById('imgModal');
+		var images = document.querySelectorAll(".img-rounded");
+		var modalImg = document.getElementById("imgset");
+		for(let i = 0; i < images.length; i++){
+			images[i].onclick = function(){
+				modal.style.display = "block";
+				modalImg.src = this.src;
 			}
-			for (let i = 0; i < unhealthy_list.length; i++) {
-				if (unhealthy_list[i] != "null") {
-					labels.push('H')
-					images.push(unhealthy_list[i])
-				}
-			}
+		}
 
-			let xhr = new XMLHttpRequest()
-			xhr.onreadystatechange = function() {
-				if (xhr.readyState == XMLHttpRequest.DONE) {
-					new_url = JSON.parse(xhr.responseText);
-					if (new_url.intermediate == "yes") {
-						window.location.href="/intermediate/" + new_url.confidence + "/" + new_url.health_user + "/" + new_url.blight_user + "/" + new_url.healthNum_user + "/" + new_url.blightNum_user;
-					}
-					else {
-						window.location.href="/final/" + new_url.confidence + "/" + new_url.health_user + "/" + new_url.blight_user + "/" + new_url.healthNum_user + "/" + new_url.blightNum_user + "/" + new_url.health_test + "/" + new_url.unhealth_test + "/" + new_url.healthyNum + "/" + new_url.unhealthyNum + "/" + new_url.healthyPct + "/" + new_url.unhealthyPct + "/" + new_url.h_prob + "/" + new_url.b_prob;
+		var span = document.getElementsByClassName("close")[0];
+
+		span.onclick = function(){
+		modal.style.display = "none";
+		}
+		$(document).ready(function(){
+			$('[data-toggle="popover"]').popover();
+		});
+
+		const healthyselectedElm = document.getElementById('healthyselected');
+		const unhealthyselectedElm = document.getElementById('unhealthyselected');
+
+		function showChecked(){
+		healthyselectedElm.innerHTML = document.querySelectorAll('input[name=healthy]:checked').length;
+		unhealthyselectedElm.innerHTML = document.querySelectorAll('input[name=unhealthy]:checked').length;
+		}
+
+		document.querySelectorAll("input[name=healthy]").forEach(i=>{
+		i.onclick = () => showChecked();
+		});
+
+		document.querySelectorAll("input[name=unhealthy]").forEach(i=>{
+		i.onclick = () => showChecked();
+		});
+		
+		$(document).ready(function(){
+			$('.img').on('click', function(){
+				
+				console.log('image clicked')
+				var healthy_list = [];
+				var unhealthy_list = [];
+				var healthy_conf_list = [];
+				var unhealthy_conf_list = [];
+				
+				$("input:checkbox[name=healthy]:checked").each(function(){
+					healthy_list.push($(this).attr("value"));
+					healthy_conf_list.push($(this).attr("conf-value"));
+				});
+				if(healthy_list.length == 0){
+					healthy_list.push("null");
+				}
+				if(healthy_conf_list.length == 0){
+					healthy_conf_list.push("0");
+				}
+				
+				$("input:checkbox[name=unhealthy]:checked").each(function(){
+					unhealthy_list.push($(this).attr("value"));
+					unhealthy_conf_list.push($(this).attr("conf-value"));
+				});
+				if(unhealthy_list.length == 0){
+				unhealthy_list.push("null"); 
+				}
+				if(unhealthy_conf_list.length == 0){
+					unhealthy_conf_list.push("0");
+				}       
+
+				labels = []
+				images = []
+				for (let i = 0; i < healthy_list.length; i++) {
+					if (healthy_list[i] != "null") {
+						labels.push('B')
+						images.push(healthy_list[i])
 					}
 				}
-			}
-			xhr.open("POST", "/final.html", true)
-			xhr.setRequestHeader("Content-Type", "application/json")
-			xhr.send(JSON.stringify({
-				labels: labels,
-				images: images
-			}))
+				for (let i = 0; i < unhealthy_list.length; i++) {
+					if (unhealthy_list[i] != "null") {
+						labels.push('H')
+						images.push(unhealthy_list[i])
+					}
+				}
 
-			// window.location.reload(true)
-            // window.location.href = '/feedback/' + healthy_list + "/" + unhealthy_list + "/" + healthy_conf_list + "/" + unhealthy_conf_list;                           
-        });
-    });
-	</script>
+				let xhr = new XMLHttpRequest()
+				xhr.onreadystatechange = function() {
+					if (xhr.readyState == XMLHttpRequest.DONE) {
+						new_url = JSON.parse(xhr.responseText);
+						if (new_url.intermediate == "yes") {
+							window.location.href="/intermediate/" + new_url.confidence + "/" + new_url.health_user + "/" + new_url.blight_user + "/" + new_url.healthNum_user + "/" + new_url.blightNum_user;
+						}
+						else {
+							window.location.href="/final/" + new_url.confidence + "/" + new_url.health_user + "/" + new_url.blight_user + "/" + new_url.healthNum_user + "/" + new_url.blightNum_user + "/" + new_url.health_test + "/" + new_url.unhealth_test + "/" + new_url.healthyNum + "/" + new_url.unhealthyNum + "/" + new_url.healthyPct + "/" + new_url.unhealthyPct + "/" + new_url.h_prob + "/" + new_url.b_prob;
+						}
+					}
+				}
+				xhr.open("POST", "/final.html", true)
+				xhr.setRequestHeader("Content-Type", "application/json")
+				xhr.send(JSON.stringify({
+					labels: labels,
+					images: images
+				}))
+
+				// window.location.reload(true)
+				// window.location.href = '/feedback/' + healthy_list + "/" + unhealthy_list + "/" + healthy_conf_list + "/" + unhealthy_conf_list;                           
+			});
+		});
+		</script>
 </body>
 </html>
 {% endblock %}

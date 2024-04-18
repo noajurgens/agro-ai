@@ -13,7 +13,7 @@ class ML_Model:
 
     """
 
-    def __init__(self, train_data, ml_classifier, preprocess):
+    def __init__(self, train_data, ml_classifier, preprocess, truth_table):
         """
         This function controls the initial creation of the machine learning model.
 
@@ -25,6 +25,8 @@ class ML_Model:
             The classifier to be used to create the machine learning model.
         preprocess : Python Function
             The function used to preprocess the data before model creation.
+        truth_table: pandas Dataframe
+            The professional diagnosis for each image
 
         Attributes
         -------
@@ -48,6 +50,8 @@ class ML_Model:
         self.X = self.preprocess.fit_transform(self.X)
 
         self.ml_model = ml_classifier.fit(self.X, self.y)
+        
+        self.truth = truth_table
 
     def GetKnownPredictions(self, new_data):
         """
@@ -189,29 +193,39 @@ class ML_Model:
         blight_pic = []
         health_pic_prob = []
         blight_pic_prob = []
+        health_pic_true = []
+        blight_pic_true = []
+        
         for y_idx, y in enumerate(y_pred):
             if y == 'H':
                 health_pic.append(test_pic[y_idx])
                 health_pic_prob.append(y_prob[y_idx])
+
+                true_val = self.truth.loc[test_pic[y_idx], 'true_value']
+                health_pic_true.append(true_val)
             elif y == 'B':
                 blight_pic.append(test_pic[y_idx])
                 blight_pic_prob.append(y_prob[y_idx])
-        health_list = list(zip(health_pic,health_pic_prob))
-        blight_list = list(zip(blight_pic,blight_pic_prob))
+                
+                true_val = self.truth.loc[test_pic[y_idx], 'true_value']
+                blight_pic_true.append(true_val)
+                
+        health_list = list(zip(health_pic,health_pic_prob,health_pic_true))
+        blight_list = list(zip(blight_pic,blight_pic_prob,blight_pic_true))
         health_list_sorted = sorted(health_list, reverse=True, key = lambda x: x[1])
         blight_list_sorted = sorted(blight_list, reverse=True, key = lambda x: x[1])
         if health_pic and health_pic_prob:
-            new_health_pic, new_health_pic_prob = list(zip(*health_list_sorted))
+            new_health_pic, new_health_pic_prob, health_pic_true = list(zip(*health_list_sorted))
         else:
             new_health_pic = []
             new_health_pic_prob = []
         if blight_pic and blight_pic_prob:
-            new_blight_pic, new_blight_pic_prob = list(zip(*blight_list_sorted))
+            new_blight_pic, new_blight_pic_prob, blight_pic_true = list(zip(*blight_list_sorted))
         else:
             new_blight_pic = []
             new_blight_pic_prob = []
-
-        return health_pic_user, blight_pic_user, new_health_pic, new_blight_pic, new_health_pic_prob, new_blight_pic_prob
+        
+        return health_pic_user, blight_pic_user, new_health_pic, new_blight_pic, new_health_pic_prob, new_blight_pic_prob, health_pic_true, blight_pic_true
 
 class Active_ML_Model:
     """
@@ -308,6 +322,7 @@ class Active_ML_Model:
         blight_pic : list
             List of images that were predicted as unhealthy.
         """
+        
         y_actual = self.ml_model.train['y_value']
         y_pic = list(self.ml_model.train.index)
         #y_pred, y_prob = self.ml_model.GetKnownPredictions(self.ml_model.train)
@@ -364,6 +379,7 @@ class Active_ML_Model:
         blight_pic = []
         health_pic_prob = []
         blight_pic_prob = []
+        
         for y_idx, y in enumerate(y_pred):
             if y == 'H':
                 health_pic.append(test_pic[y_idx])
