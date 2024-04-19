@@ -85,9 +85,10 @@
 				<div id="healthy_checkboxes" class="col-lg-3 col-md-4 col-6 d-block mb-4 h-100">
 					<img class="img-fluid img-rounded"
 						src="https://cornimagesbucket.s3.us-east-2.amazonaws.com/images_compressed/{{health_test[i]}}"
-						alt="">
+						alt=""
+						id="{{health_test[i]}}">
 					<h6 class="font-weight-normal">Individual Confidence: {{"{:.0%}".format(h_prob[i])}}
-					<h6 class="font-weight-normal">Professional Diagnosis: {{h_true[i]}}
+					<h6 class="font-weight-normal" id="{{health_test[i]}}-diagnosis">Professional Diagnosis: {{h_true[i]}}
 					<h6 class="font-weight-normal">Disagree with the prediction?
 	                <input type="checkbox" name="healthy" value="{{health_test[i]}}" conf-value="{{h_prob[i]}}"><br>
 				</div>
