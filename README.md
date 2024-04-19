@@ -48,6 +48,7 @@ Additionally, confidence in predictions is calculated using k-fold cross-validat
 - Checking and submitting the checkboxes now initiates the active learning process.
 - The checkbox/active learning flow has been seamlessly integrated into the general user experience flow.
 - The professional diagnosis of plants as health "H" or blighted "B" now appears on the final results page.
+- Simple yet impactful changes to the user interface to enhance usability and aesthetics.
 
 ## Setting Up the Project Locally
 To run the application locally on your machine, follow these steps:
