@@ -78,8 +78,6 @@ class PythonTest(unittest.TestCase):
         self.assertNotEqual("Confidence: 100.00%", confidence_val.text)
 
     def test_retrain_no_new_data(self):
-        # Currently does not work due to bug
-        return
         self.driver.get('http://127.0.0.1:5001/')
 
         try_button = self.driver.find_element_by_name("try-button")
