@@ -85,9 +85,10 @@
 				<div id="healthy_checkboxes" class="col-lg-3 col-md-4 col-6 d-block mb-4 h-100">
 					<img class="img-fluid img-rounded"
 						src="https://cornimagesbucket.s3.us-east-2.amazonaws.com/images_compressed/{{health_test[i]}}"
-						alt="">
+						alt=""
+						id="{{health_test[i]}}">
 					<h6 class="font-weight-normal">Individual Confidence: {{"{:.0%}".format(h_prob[i])}}
-					<h6 class="font-weight-normal">Professional Diagnosis: {{h_true[i]}}
+					<h6 class="font-weight-normal" id="{{health_test[i]}}-diagnosis">Professional Diagnosis: {{ h_true[i] }}
 					<h6 class="font-weight-normal">Disagree with the prediction?
 	                <input type="checkbox" name="healthy" value="{{health_test[i]}}" conf-value="{{h_prob[i]}}"><br>
 				</div>
@@ -117,7 +118,7 @@
 						src="https://cornimagesbucket.s3.us-east-2.amazonaws.com/images_compressed/{{unhealth_test[i]}}"
 						alt="">
 					<h6 class="font-weight-normal">Individual Confidence: {{"{:.0%}".format(b_prob[i])}}
-					<h6 class="font-weight-normal">Professional Diagnosis: {{b_true[i]}}
+					<h6 class="font-weight-normal">Professional Diagnosis: {{ b_true[i] }}
 					<h6 class="font-weight-normal">Disagree with the prediction?
 	                <input type="checkbox" name="unhealthy" value="{{unhealth_test[i]}}" conf-value="{{b_prob[i]}}"><br>
 				</div>
@@ -231,11 +232,28 @@
 				xhr.onreadystatechange = function() {
 					if (xhr.readyState == XMLHttpRequest.DONE) {
 						new_url = JSON.parse(xhr.responseText);
+						if (new_url.blightNum_user == 0) {
+							new_url.b_prob = [0];
+							new_url.blight_user = ["null"];
+						}
+						if (new_url.unhealthyNum == 0) {
+							new_url.unhealth_test = ["null"];
+							new_url.b_true = ["null"];
+						}
+						if (new_url.healthNum_user == 0) {
+							new_url.h_prob = [0];
+							new_url.health_user = ["null"];
+						}
+						if (new_url.healthyNum == 0) {
+							new_url.health_test = ["null"];
+							new_url.h_true = ["null"];
+						}
 						if (new_url.intermediate == "yes") {
 							window.location.href="/intermediate/" + new_url.confidence + "/" + new_url.health_user + "/" + new_url.blight_user + "/" + new_url.healthNum_user + "/" + new_url.blightNum_user;
 						}
 						else {
-							window.location.href="/final/" + new_url.confidence + "/" + new_url.health_user + "/" + new_url.blight_user + "/" + new_url.healthNum_user + "/" + new_url.blightNum_user + "/" + new_url.health_test + "/" + new_url.unhealth_test + "/" + new_url.healthyNum + "/" + new_url.unhealthyNum + "/" + new_url.healthyPct + "/" + new_url.unhealthyPct + "/" + new_url.h_prob + "/" + new_url.b_prob;
+						console.log(new_url);
+							window.location.href="/final/" + new_url.confidence + "/" + new_url.health_user + "/" + new_url.blight_user + "/" + new_url.healthNum_user + "/" + new_url.blightNum_user + "/" + new_url.health_test + "/" + new_url.unhealth_test + "/" + new_url.healthyNum + "/" + new_url.unhealthyNum + "/" + new_url.healthyPct + "/" + new_url.unhealthyPct + "/" + new_url.h_prob + "/" + new_url.b_prob + "/" + new_url.h_true + "/" + new_url.b_true;
 						}
 					}
 				}

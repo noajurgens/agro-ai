@@ -185,7 +185,7 @@ def prepareResults(images, labels, fromLabelsPage):
         if fromLabelsPage:
             return render_template('final.html', confidence = "{:.2%}".format(round(session['confidence'],4)), health_user = health_pic_user, blight_user = blight_pic_user, healthNum_user = len(health_pic_user), blightNum_user = len(blight_pic_user), health_test = health_pic, unhealth_test = blight_pic, healthyNum = len(health_pic), unhealthyNum = len(blight_pic), healthyPct = "{:.2%}".format(len(health_pic)/(200-(len(health_pic_user)+len(blight_pic_user)))), unhealthyPct = "{:.2%}".format(len(blight_pic)/(200-(len(health_pic_user)+len(blight_pic_user)))), h_prob = health_pic_prob, b_prob = blight_pic_prob, h_true = health_pic_true, b_true = blight_pic_true)
         else:
-            return jsonify({"intermediate": "no", "confidence": "{:.2%}".format(round(session['confidence'],4)), "health_user": health_pic_user, "blight_user": blight_pic_user, "healthNum_user": len(health_pic_user), "blightNum_user": len(blight_pic_user), "health_test": health_pic, "unhealth_test": blight_pic, "healthyNum": len(health_pic), "unhealthyNum": len(blight_pic), "healthyPct": "{:.2%}".format(len(health_pic)/(200-(len(health_pic_user)+len(blight_pic_user)))), "unhealthyPct": "{:.2%}".format(len(blight_pic)/(200-(len(health_pic_user)+len(blight_pic_user)))), "h_prob": health_pic_prob, "b_prob": blight_pic_prob})
+            return jsonify({"intermediate": "no", "confidence": "{:.2%}".format(round(session['confidence'],4)), "health_user": health_pic_user, "blight_user": blight_pic_user, "healthNum_user": len(health_pic_user), "blightNum_user": len(blight_pic_user), "health_test": health_pic, "unhealth_test": blight_pic, "healthyNum": len(health_pic), "unhealthyNum": len(blight_pic), "healthyPct": "{:.2%}".format(len(health_pic)/(200-(len(health_pic_user)+len(blight_pic_user)))), "unhealthyPct": "{:.2%}".format(len(blight_pic)/(200-(len(health_pic_user)+len(blight_pic_user)))), "h_prob": health_pic_prob, "b_prob": blight_pic_prob, "h_true": health_pic_true, "b_true": blight_pic_true})
 
 @app.route("/", methods=['GET'])
 @app.route("/index.html",methods=['GET'])
@@ -232,8 +232,8 @@ def intermediatepage(confidence, health_user, blight_user, healthNum_user, bligh
     blight_user = blight_user.split(",")
     return render_template('intermediate.html', confidence=confidence, health_user=health_user, blight_user=blight_user, healthNum_user=healthNum_user, blightNum_user=blightNum_user)
 
-@app.route("/final/<confidence>/<health_user>/<blight_user>/<healthNum_user>/<blightNum_user>/<health_test>/<unhealth_test>/<healthyNum>/<unhealthyNum>/<healthyPct>/<unhealthyPct>/<h_prob>/<b_prob>", methods=['GET'])
-def finalpage(confidence, health_user, blight_user, healthNum_user, blightNum_user, health_test, unhealth_test, healthyNum, unhealthyNum, healthyPct, unhealthyPct, h_prob, b_prob):
+@app.route("/final/<confidence>/<health_user>/<blight_user>/<healthNum_user>/<blightNum_user>/<health_test>/<unhealth_test>/<healthyNum>/<unhealthyNum>/<healthyPct>/<unhealthyPct>/<h_prob>/<b_prob>/<h_true>/<b_true>", methods=['GET'])
+def finalpage(confidence, health_user, blight_user, healthNum_user, blightNum_user, health_test, unhealth_test, healthyNum, unhealthyNum, healthyPct, unhealthyPct, h_prob, b_prob, h_true, b_true):
     health_user = health_user.split(",")
     blight_user = blight_user.split(",")
     health_test = health_test.split(",")
@@ -242,7 +242,9 @@ def finalpage(confidence, health_user, blight_user, healthNum_user, blightNum_us
     unhealthyNum = int(unhealthyNum)
     h_prob = [float(x) for x in h_prob.split(",")]
     b_prob = [float(x) for x in b_prob.split(",")]
-    return render_template('final.html', confidence=confidence, health_user=health_user, blight_user=blight_user, healthNum_user=healthNum_user, blightNum_user=blightNum_user, health_test=health_test, unhealth_test=unhealth_test, healthyNum=healthyNum, unhealthyNum=unhealthyNum, healthyPct=healthyPct, unhealthyPct=unhealthyPct, h_prob=h_prob, b_prob=b_prob)
+    h_true = h_true.split(",")
+    b_true = b_true.split(",")
+    return render_template('final.html', confidence=confidence, health_user=health_user, blight_user=blight_user, healthNum_user=healthNum_user, blightNum_user=blightNum_user, health_test=health_test, unhealth_test=unhealth_test, healthyNum=healthyNum, unhealthyNum=unhealthyNum, healthyPct=healthyPct, unhealthyPct=unhealthyPct, h_prob=h_prob, b_prob=b_prob, h_true=h_true, b_true=b_true)
 
 @app.route("/final.html",methods=['GET', 'POST'])
 def final():
