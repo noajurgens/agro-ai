@@ -77,20 +77,21 @@
                 <span class="fa fa-info-circle" style="font-size:24px"></span></a>
 			<a href="javascript:void(0)" data-toggle="popover" data-trigger="focus" data-content="Click on image to view full size">
 			    <span class="fa fa-search"></span></a></h5>
-
+			<input type="checkbox" id="HealthyDiagnosisSwitch">Show Professional Diagnosis?
 			<hr class="mt-2 mb-5">
 
 			<div class="row text-center text-lg-left">
 				{%for i in range(0, healthyNum)%}
 				<div id="healthy_checkboxes" class="col-lg-3 col-md-4 col-6 d-block mb-4 h-100">
-					<img class="img-fluid img-rounded"
-						src="https://cornimagesbucket.s3.us-east-2.amazonaws.com/images_compressed/{{health_test[i]}}"
-						alt=""
-						id="{{health_test[i]}}">
-					<h6 class="font-weight-normal">Individual Confidence: {{"{:.0%}".format(h_prob[i])}}
-					<h6 class="font-weight-normal" id="{{health_test[i]}}-diagnosis">Professional Diagnosis: {{ h_true[i] }}
-					<h6 class="font-weight-normal">Disagree with the prediction?
-	                <input type="checkbox" name="healthy" value="{{health_test[i]}}" conf-value="{{h_prob[i]}}"><br>
+					<div class="healthybox" id="{{h_true[i]}}" style="border: 2px solid black">
+						<img class="img-fluid img-rounded"
+							src="https://cornimagesbucket.s3.us-east-2.amazonaws.com/images_compressed/{{health_test[i]}}"
+							alt=""
+							id="{{health_test[i]}}">
+						<h6 class="font-weight-normal">Individual Confidence: {{"{:.0%}".format(h_prob[i])}}
+						<h6 class="font-weight-normal">Disagree with the prediction?
+						<input type="checkbox" name="healthy" value="{{health_test[i]}}" conf-value="{{h_prob[i]}}"><br>
+					</div>
 				</div>
 				{%endfor%}
 				<div id="imgModal" class="modal">
@@ -108,19 +109,21 @@
 			<a href="javascript:void(0)" data-toggle="popover" data-trigger="focus" data-content="This is the percentage of &quot;Unhealthy&quot; images in the image set of predicting results">
                             <span class="fa fa-info-circle" style="font-size:24px"></span></a>
 			<a href="javascript:void(0)" data-toggle="popover" data-trigger="focus" data-content="Click on image to view full size"> <span class="fa fa-search"></span></a></h5>
-
+			<input type="checkbox" id="UnhealthyDiagnosisSwitch">Show Professional Diagnosis?
 			<hr class="mt-2 mb-5">
 
 			<div class="row text-center text-lg-left">
 				{%for i in range(0, unhealthyNum)%}
 				<div id="unhealthy_checkboxes" class="col-lg-3 col-md-4 col-6 d-block mb-4 h-100">
-					<img class="img-fluid img-rounded"
-						src="https://cornimagesbucket.s3.us-east-2.amazonaws.com/images_compressed/{{unhealth_test[i]}}"
-						alt="">
-					<h6 class="font-weight-normal">Individual Confidence: {{"{:.0%}".format(b_prob[i])}}
-					<h6 class="font-weight-normal">Professional Diagnosis: {{ b_true[i] }}
-					<h6 class="font-weight-normal">Disagree with the prediction?
-	                <input type="checkbox" name="unhealthy" value="{{unhealth_test[i]}}" conf-value="{{b_prob[i]}}"><br>
+					<div class="unhealthybox" id="{{b_true[i]}}" style="border: 2px solid black">
+						<img class="img-fluid img-rounded"
+							src="https://cornimagesbucket.s3.us-east-2.amazonaws.com/images_compressed/{{unhealth_test[i]}}"
+							alt="">
+						<h6 class="font-weight-normal">Individual Confidence: {{"{:.0%}".format(b_prob[i])}}
+						
+						<h6 class="font-weight-normal">Disagree with the prediction?
+						<input type="checkbox" name="unhealthy" value="{{unhealth_test[i]}}" conf-value="{{b_prob[i]}}"><br>
+					</div>
 				</div>
 				{%endfor%}
 				<div id="imgModal" class="modal">
@@ -147,6 +150,66 @@
     </div>
     </footer>
 		<script>
+		// Enable/Disable Professional Diagnosis For Healthy Predictions
+		var healthyDiagnosisSwitch = document.getElementById("HealthyDiagnosisSwitch");
+		healthyDiagnosisSwitch.addEventListener('change', function() {
+			var healthyBoxes = document.querySelectorAll(".healthybox");
+			
+			if (healthyDiagnosisSwitch.checked)
+			{
+				
+				healthyBoxes.forEach(function(box) 
+				{
+					if (box.id != "H")
+					{
+						box.style.border = '2px solid red';
+					}
+					else
+					{
+						box.style.border = '2px solid black';
+					}
+					
+				});
+			}
+			else
+			{
+				healthyBoxes.forEach(function(box) 
+				{
+					box.style.border = '2px solid black';
+				});
+			}
+		});
+
+		// Enable/Disable Professional Diagnosis For Healthy Predictions
+		var unhealthyDiagnosisSwitch = document.getElementById("UnhealthyDiagnosisSwitch");
+		unhealthyDiagnosisSwitch.addEventListener('change', function() {
+			var unhealthyBoxes = document.querySelectorAll(".unhealthybox");
+			
+			if (unhealthyDiagnosisSwitch.checked)
+			{
+				
+				unhealthyBoxes.forEach(function(box) 
+				{
+					if (box.id != "B")
+					{
+						box.style.border = '2px solid red';
+					}
+					else
+					{
+						box.style.border = '2px solid black';
+					}
+					
+				});
+			}
+			else
+			{
+				unhealthyBoxes.forEach(function(box) 
+				{
+					box.style.border = '2px solid black';
+				});
+			}
+		});
+
 		var modal = document.getElementById('imgModal');
 		var images = document.querySelectorAll(".img-rounded");
 		var modalImg = document.getElementById("imgset");
@@ -181,6 +244,7 @@
 		document.querySelectorAll("input[name=unhealthy]").forEach(i=>{
 		i.onclick = () => showChecked();
 		});
+			
 		
 		$(document).ready(function(){
 			$('.img').on('click', function(){

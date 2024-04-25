@@ -202,12 +202,14 @@ class ML_Model:
                 health_pic_prob.append(y_prob[y_idx])
 
                 true_val = self.truth.loc[test_pic[y_idx], 'true_value']
+                # true_val = "Healthy" if true_val == "H" else "Blighted"
                 health_pic_true.append(true_val)
             elif y == 'B':
                 blight_pic.append(test_pic[y_idx])
                 blight_pic_prob.append(y_prob[y_idx])
                 
                 true_val = self.truth.loc[test_pic[y_idx], 'true_value']
+                # true_val = "Healthy" if true_val == "H" else "Blighted"
                 blight_pic_true.append(true_val)
                 
         health_list = list(zip(health_pic,health_pic_prob,health_pic_true))
