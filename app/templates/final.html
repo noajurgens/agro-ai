@@ -54,7 +54,7 @@
 		<div class="container">
 
 			<h5 class="font-weight-light text-center text-lg-left mt-4 mb-0">Unhealthy (User):
-				{{blightNum_user}} <a href="javascript:void(0)" data-toggle="popover" data-trigger="focus" data-content="Click on image to view full size"> <span class="fa fa-search"></span></a>
+				{{blightNum_user}} <a href="javascript:void(0)" data-toggle="popover" data-trigger="focus" data-content="Click on image to view full size."> <span class="fa fa-search"></span></a>
             </h5>
 
 			<hr class="mt-2 mb-5">
@@ -85,7 +85,7 @@
 			<h5 class="font-weight-light text-center text-lg-left mt-4 mb-0">Healthy Test (Machine): {{healthyNum}} ({{healthyPct}})
 			<a href="javascript:void(0)" data-toggle="popover" data-trigger="focus" data-content="This is the percentage of &quot;Healthy&quot; images in the image set of predicting results">
                 <span class="fa fa-info-circle" style="font-size:24px"></span></a>
-			<a href="javascript:void(0)" data-toggle="popover" data-trigger="focus" data-content="Click on image to view full size">
+			<a href="javascript:void(0)" data-toggle="popover" data-trigger="focus" data-content="Click on image to view full size. This will also highlight blighted areas if the diagnosis checkbox is checked.">
 			    <span class="fa fa-search"></span></a></h5>
 			<input type="checkbox" id="HealthyDiagnosisSwitch"> Show Professional Diagnosis? (Highlight Incorrect Guesses)
 			<hr class="mt-2 mb-5">
@@ -122,12 +122,12 @@
 			<h5 class="font-weight-light text-center text-lg-left mt-4 mb-0">Unhealthy Test (Machine): {{unhealthyNum}} ({{unhealthyPct}})
 			<a href="javascript:void(0)" data-toggle="popover" data-trigger="focus" data-content="This is the percentage of &quot;Unhealthy&quot; images in the image set of predicting results">
                             <span class="fa fa-info-circle" style="font-size:24px"></span></a>
-			<a href="javascript:void(0)" data-toggle="popover" data-trigger="focus" data-content="Click on image to view full size"> <span class="fa fa-search"></span></a></h5>
+			<a href="javascript:void(0)" data-toggle="popover" data-trigger="focus" data-content="Click on image to view full size. This will also highlight blighted areas if the diagnosis checkbox is checked."> <span class="fa fa-search"></span></a></h5>
 			<input type="checkbox" id="UnhealthyDiagnosisSwitch"> Show Professional Diagnosis? (Highlight Incorrect Guesses)
 			<hr class="mt-2 mb-5">
 
-			<div container="outer-container">
-				<div container="inner-container">
+			<div class="outer-container">
+				<div class="inner-container">
 					<div class="row text-center text-lg-left">
 						{%for i in range(0, unhealthyNum)%}
 						<div id="unhealthy_checkboxes" class="col-lg-3 col-md-4 col-6 d-block mb-4 h-100">
@@ -183,7 +183,7 @@
 				{
 					if (box.id != "H")
 					{
-						box.style.border = '2px solid red';
+						box.style.border = '3px solid red';
 					}
 					else
 					{
@@ -214,7 +214,7 @@
 				{
 					if (box.id != "B")
 					{
-						box.style.border = '2px solid red';
+						box.style.border = '3px solid red';
 					}
 					else
 					{
