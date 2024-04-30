@@ -77,3 +77,13 @@
     text-decoration: none;
     cursor: pointer;
 }
+
+.outer-container {
+    height: 300px;
+    overflow: scroll;
+    border: 1px solid #ccc;
+}
+
+.inner_container {
+    height: 400px;
+}
