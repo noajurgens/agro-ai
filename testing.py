@@ -56,7 +56,7 @@ class PythonTest(unittest.TestCase):
         try_button.click()
 
         while (self.driver.find_elements_by_id("choice-Healthy")):
-                print('finding elements')
+                # print('finding elements')
                 healthy_choice = self.driver.find_element_by_id("choice-Healthy")
                 healthy_choice.click()
                 submit_button = self.driver.find_element_by_id("submit-btn")
@@ -114,7 +114,7 @@ class PythonTest(unittest.TestCase):
         
         if (self.driver.find_elements_by_id("DSC05318.JPG")):
             diagnosis = self.driver.find_element_by_id("DSC05318.JPG-diagnosis")
-            print(diagnosis.text)
+            # print(diagnosis.text)
             self.assertEqual("Professional Diagnosis: H", diagnosis.text)
     
     def test_find_ground_truth_unhealthy(self):
@@ -131,7 +131,7 @@ class PythonTest(unittest.TestCase):
         
         if (self.driver.find_elements_by_id("DSC00337.JPG")):
             diagnosis = self.driver.find_element_by_id("DSC00337.JPG-diagnosis")
-            print(diagnosis.text)
+            # print(diagnosis.text)
             self.assertEqual("Professional Diagnosis: B", diagnosis.text)
 
 
