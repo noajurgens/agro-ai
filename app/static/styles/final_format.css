@@ -79,11 +79,14 @@
 }
 
 .outer-container {
-    height: 300px;
-    overflow: scroll;
+    max-width: 100%;
+    max-height: 400px;
+    min-height: 100px;
+    overflow-y: auto;
+    overflow-x: hidden;
     border: 1px solid #ccc;
 }
 
 .inner_container {
-    height: 400px;
+    height: 200px;
 }
