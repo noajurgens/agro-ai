@@ -180,11 +180,23 @@ class ML_Model:
         blight_pic_user : list
             List of images that were predicted as blight.
 
-        health_pic : list
+        new_health_pic : list
             List of images in the test set that are predicted to being healthy.
 
-        blight_pic : list
+        new_blight_pic : list
             List of images in the test set that are predicted to being blighted.
+            
+        new_health_pic_prob : list
+            List of the confidence values for the predicted list of healthy images.
+            
+        new_blight_pic_prob : list
+            List of the confidence values for the predicted list of blighted images.
+            
+        health_pic_true : list
+            List of the true, professionally diagnosed status of each image in the predicted set of healthy images.
+            
+        blight_pic_true : list
+            List of the true, professionally diagnosed status of each image in the predicted set of blighted images.
         """
         health_pic_user, blight_pic_user = self.infoForProgress(train_img_names)
         test_pic = list(test.index.values)

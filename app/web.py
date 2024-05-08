@@ -37,7 +37,6 @@ def getData():
     data_mod = data.astype({'8': 'int32','9': 'int32','10': 'int32','12': 'int32','14': 'int32', 'true_value': 'string'})
     
     truth_table = data_mod.iloc[:, -1:]
-    # print(truth_table.iloc[:, :])
     session['truth'] = truth_table.to_json()    
     
     return data_mod.iloc[:, :-1]
@@ -145,7 +144,7 @@ def getNextSetOfImages(form, sampling_method):
 
 def prepareResults(images, labels, fromLabelsPage):
     """
-    Creates the new machine learning model and gets the confidence of the machine learning model.
+    Creates the new machine learning model and gets the confidence of the machine learning model along with any other information needed for display purposes.
 
     Parameters
     ----------
