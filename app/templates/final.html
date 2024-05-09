@@ -95,7 +95,7 @@
 					<div class="row text-center text-lg-left">
 						{%for i in range(0, healthyNum)%}
 						<div id="healthy_checkboxes" class="col-lg-3 col-md-4 col-6 d-block mb-4 h-100">
-							<div class="healthybox" id="{{h_true[i]}}" style="border: 2px solid black">
+							<div class="healthybox " id="{{h_true[i]}}">
 								<img class="img-fluid img-rounded"
 									src="https://cornimagesbucket.s3.us-east-2.amazonaws.com/images_compressed/{{health_test[i]}}"
 									alt=""
@@ -131,7 +131,7 @@
 					<div class="row text-center text-lg-left">
 						{%for i in range(0, unhealthyNum)%}
 						<div id="unhealthy_checkboxes" class="col-lg-3 col-md-4 col-6 d-block mb-4 h-100">
-							<div class="unhealthybox" id="{{b_true[i]}}" style="border: 2px solid black">
+							<div class="unhealthybox" id="{{b_true[i]}}">
 								<img class="img-fluid img-rounded"
 									src="https://cornimagesbucket.s3.us-east-2.amazonaws.com/images_compressed/{{unhealth_test[i]}}"
 									alt=""
@@ -187,7 +187,7 @@
 					}
 					else
 					{
-						box.style.border = '2px solid black';
+						box.style.border = '';
 					}
 					
 				});
@@ -197,7 +197,7 @@
 				showBoxed = false;
 				healthyBoxes.forEach(function(box) 
 				{
-					box.style.border = '2px solid black';
+					box.style.border = '';
 				});
 			}
 		});
@@ -218,7 +218,7 @@
 					}
 					else
 					{
-						box.style.border = '2px solid black';
+						box.style.border = '';
 					}
 					
 				});
@@ -228,7 +228,7 @@
 				showBoxed = false;
 				unhealthyBoxes.forEach(function(box) 
 				{
-					box.style.border = '2px solid black';
+					box.style.border = '';
 				});
 			}
 		});
@@ -242,6 +242,7 @@
 				modal.style.display = "block";
 				var boxedImage = "https://agro-ai-maize.s3.us-east-2.amazonaws.com/boxed/" + this.id;
 				var normalImage = "https://cornimagesbucket.s3.us-east-2.amazonaws.com/images_compressed/" + this.id;
+				var imageId = this.id;
 
 				var tempImg = new Image();
 				tempImg.src = boxedImage;
@@ -250,10 +251,12 @@
 					if (showBoxed)
 					{
 						modalImg.src = boxedImage;
+						modalImg.name = imageId + '-boxed'
 					}
 					else
 					{
 						modalImg.src = normalImage;
+						modalImg.name = imageId + '-normal'
 					}
 					
 				};
