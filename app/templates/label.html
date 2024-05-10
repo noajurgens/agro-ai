@@ -22,7 +22,7 @@
 					<div class="card-body">
 					    <br>
 					    <p><a href="javascript:void(0)" data-toggle="popover" data-trigger="focus" title="Useful Tips" data-content="The image can be identified as &quot;healthy&quot; if it satisfies the following conditions: green, no dark spots on the leaves, and not wilted. Otherwise, it's unhealthy. <br /><br />The training labels you provide will teach AI to recognize patterns and features on its own" data-html="true">
-                            <span class="fas fa-bullhorn" style="font-size:24px"></span>
+                            <span class="fa fa-info-circle" style="font-size:24px"></span>
                         </a></p>
                         <br>
 						<p>Use the buttons to label an image as "Healthy" or
@@ -30,10 +30,11 @@
 						<form class="form form-horizontal" action="" method="post">
 							<p>
 								{% for choice,label in form.choice.choices %}
-								<label><input type="radio" name="{{ form.choice.name}}" value="{{ choice }}" id="choice-{{label}}"> {{label}}</label><br>
+								<label><input type="radio" name="{{ form.choice.name}}" value="{{ choice }}" id="choice-{{label}}" required> {{label}}</label><br>
 								{% endfor %}
 							</p>
-							<input type="submit" id="submit-btn" value="Submit">
+							<input type="submit" id="submit-btn" value="Submit" class="mb-2 mt-4 active_button">
+						</form><br>
 						</form><br>
 					</div>
 				</div>

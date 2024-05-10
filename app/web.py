@@ -32,9 +32,14 @@ def getData():
     path = 's3://cornimagesbucket/csvOut.csv'
 
     data = pd.read_csv(path, index_col = 0, header = None)
-    data.columns = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16']
+    data.columns = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','true_value']
 
-    data_mod = data.astype({'8': 'int32','9': 'int32','10': 'int32','12': 'int32','14': 'int32'})
+    data_mod = data.astype({'8': 'int32','9': 'int32','10': 'int32','12': 'int32','14': 'int32', 'true_value': 'string'})
+    
+    truth_table = data_mod.iloc[:, -1:]
+    # print(truth_table.iloc[:, :])
+    session['truth'] = truth_table.to_json()    
+    
     return data_mod.iloc[:, :-1]
 
 def createMLModel(data):
@@ -56,12 +61,14 @@ def createMLModel(data):
     train_img_names, train_img_label = list(zip(*session['train']))
     train_set = data.loc[train_img_names, :]
     train_set['y_value'] = train_img_label
-    ml_model = ML_Model(train_set, RandomForestClassifier(), DataPreprocessing(True))
+
+    truth_table = pd.read_json(session['truth'])
+    ml_model = ML_Model(train_set, RandomForestClassifier(), DataPreprocessing(True), truth_table)
     return ml_model, train_img_names
 
 def renderLabel(form):
     """
-    prepairs a render_template to show the label.html web page.
+    prepares a render_template to show the label.html web page.
 
     Parameters
     ----------
@@ -98,7 +105,7 @@ def initializeAL(form, confidence_break = .7):
     ml_classifier = RandomForestClassifier()
     data = getData()
     al_model = Active_ML_Model(data, ml_classifier, preprocess)
-
+    
     session['confidence'] = 0
     session['confidence_break'] = confidence_break
     session['labels'] = []
@@ -107,6 +114,7 @@ def initializeAL(form, confidence_break = .7):
     session['train'] = al_model.train
     session['model'] = True
     session['queue'] = list(al_model.sample.index.values)
+    
 
     return renderLabel(form)
 
@@ -135,7 +143,7 @@ def getNextSetOfImages(form, sampling_method):
 
     return renderLabel(form)
 
-def prepairResults(images, labels, fromLabelsPage):
+def prepareResults(images, labels, fromLabelsPage):
     """
     Creates the new machine learning model and gets the confidence of the machine learning model.
 
@@ -151,7 +159,9 @@ def prepairResults(images, labels, fromLabelsPage):
     """
     session['sample'] = tuple(zip(images, labels))
 
-
+    truth_table = pd.read_json(session['truth'])
+    
+    
     if session['train'] != None:
         session['train'] = session['train'] + session['sample']
     else:
@@ -171,11 +181,11 @@ def prepairResults(images, labels, fromLabelsPage):
             return jsonify({"intermediate": "yes", 'confidence': "{:.2%}".format(round(session['confidence'],4)), "health_user": health_pic, "blight_user": blight_pic, "healthNum_user": len(health_pic), "blightNum_user": len(blight_pic)})
     else:
         test_set = data.loc[session['test'], :]
-        health_pic_user, blight_pic_user, health_pic, blight_pic, health_pic_prob, blight_pic_prob = ml_model.infoForResults(train_img_names, test_set)
+        health_pic_user, blight_pic_user, health_pic, blight_pic, health_pic_prob, blight_pic_prob, health_pic_true, blight_pic_true = ml_model.infoForResults(train_img_names, test_set)
         if fromLabelsPage:
-            return render_template('final.html', confidence = "{:.2%}".format(round(session['confidence'],4)), health_user = health_pic_user, blight_user = blight_pic_user, healthNum_user = len(health_pic_user), blightNum_user = len(blight_pic_user), health_test = health_pic, unhealth_test = blight_pic, healthyNum = len(health_pic), unhealthyNum = len(blight_pic), healthyPct = "{:.2%}".format(len(health_pic)/(200-(len(health_pic_user)+len(blight_pic_user)))), unhealthyPct = "{:.2%}".format(len(blight_pic)/(200-(len(health_pic_user)+len(blight_pic_user)))), h_prob = health_pic_prob, b_prob = blight_pic_prob)
+            return render_template('final.html', confidence = "{:.2%}".format(round(session['confidence'],4)), health_user = health_pic_user, blight_user = blight_pic_user, healthNum_user = len(health_pic_user), blightNum_user = len(blight_pic_user), health_test = health_pic, unhealth_test = blight_pic, healthyNum = len(health_pic), unhealthyNum = len(blight_pic), healthyPct = "{:.2%}".format(len(health_pic)/(200-(len(health_pic_user)+len(blight_pic_user)))), unhealthyPct = "{:.2%}".format(len(blight_pic)/(200-(len(health_pic_user)+len(blight_pic_user)))), h_prob = health_pic_prob, b_prob = blight_pic_prob, h_true = health_pic_true, b_true = blight_pic_true)
         else:
-            return jsonify({"intermediate": "no", "confidence": "{:.2%}".format(round(session['confidence'],4)), "health_user": health_pic_user, "blight_user": blight_pic_user, "healthNum_user": len(health_pic_user), "blightNum_user": len(blight_pic_user), "health_test": health_pic, "unhealth_test": blight_pic, "healthyNum": len(health_pic), "unhealthyNum": len(blight_pic), "healthyPct": "{:.2%}".format(len(health_pic)/(200-(len(health_pic_user)+len(blight_pic_user)))), "unhealthyPct": "{:.2%}".format(len(blight_pic)/(200-(len(health_pic_user)+len(blight_pic_user)))), "h_prob": health_pic_prob, "b_prob": blight_pic_prob})
+            return jsonify({"intermediate": "no", "confidence": "{:.2%}".format(round(session['confidence'],4)), "health_user": health_pic_user, "blight_user": blight_pic_user, "healthNum_user": len(health_pic_user), "blightNum_user": len(blight_pic_user), "health_test": health_pic, "unhealth_test": blight_pic, "healthyNum": len(health_pic), "unhealthyNum": len(blight_pic), "healthyPct": "{:.2%}".format(len(health_pic)/(200-(len(health_pic_user)+len(blight_pic_user)))), "unhealthyPct": "{:.2%}".format(len(blight_pic)/(200-(len(health_pic_user)+len(blight_pic_user)))), "h_prob": health_pic_prob, "b_prob": blight_pic_prob, "h_true": health_pic_true, "b_true": blight_pic_true})
 
 @app.route("/", methods=['GET'])
 @app.route("/index.html",methods=['GET'])
@@ -200,7 +210,7 @@ def label():
 
     elif form.is_submitted() and session['queue'] == []:# Finished Labeling
         session['labels'].append(form.choice.data)
-        return prepairResults(session["sample_idx"], session["labels"], True)
+        return prepareResults(session["sample_idx"], session["labels"], True)
 
     elif form.is_submitted() and session['queue'] != []: #Still gathering labels
         session['labels'].append(form.choice.data)
@@ -222,8 +232,8 @@ def intermediatepage(confidence, health_user, blight_user, healthNum_user, bligh
     blight_user = blight_user.split(",")
     return render_template('intermediate.html', confidence=confidence, health_user=health_user, blight_user=blight_user, healthNum_user=healthNum_user, blightNum_user=blightNum_user)
 
-@app.route("/final/<confidence>/<health_user>/<blight_user>/<healthNum_user>/<blightNum_user>/<health_test>/<unhealth_test>/<healthyNum>/<unhealthyNum>/<healthyPct>/<unhealthyPct>/<h_prob>/<b_prob>", methods=['GET'])
-def finalpage(confidence, health_user, blight_user, healthNum_user, blightNum_user, health_test, unhealth_test, healthyNum, unhealthyNum, healthyPct, unhealthyPct, h_prob, b_prob):
+@app.route("/final/<confidence>/<health_user>/<blight_user>/<healthNum_user>/<blightNum_user>/<health_test>/<unhealth_test>/<healthyNum>/<unhealthyNum>/<healthyPct>/<unhealthyPct>/<h_prob>/<b_prob>/<h_true>/<b_true>", methods=['GET'])
+def finalpage(confidence, health_user, blight_user, healthNum_user, blightNum_user, health_test, unhealth_test, healthyNum, unhealthyNum, healthyPct, unhealthyPct, h_prob, b_prob, h_true, b_true):
     health_user = health_user.split(",")
     blight_user = blight_user.split(",")
     health_test = health_test.split(",")
@@ -232,7 +242,9 @@ def finalpage(confidence, health_user, blight_user, healthNum_user, blightNum_us
     unhealthyNum = int(unhealthyNum)
     h_prob = [float(x) for x in h_prob.split(",")]
     b_prob = [float(x) for x in b_prob.split(",")]
-    return render_template('final.html', confidence=confidence, health_user=health_user, blight_user=blight_user, healthNum_user=healthNum_user, blightNum_user=blightNum_user, health_test=health_test, unhealth_test=unhealth_test, healthyNum=healthyNum, unhealthyNum=unhealthyNum, healthyPct=healthyPct, unhealthyPct=unhealthyPct, h_prob=h_prob, b_prob=b_prob)
+    h_true = h_true.split(",")
+    b_true = b_true.split(",")
+    return render_template('final.html', confidence=confidence, health_user=health_user, blight_user=blight_user, healthNum_user=healthNum_user, blightNum_user=blightNum_user, health_test=health_test, unhealth_test=unhealth_test, healthyNum=healthyNum, unhealthyNum=unhealthyNum, healthyPct=healthyPct, unhealthyPct=unhealthyPct, h_prob=h_prob, b_prob=b_prob, h_true=h_true, b_true=b_true)
 
 @app.route("/final.html",methods=['GET', 'POST'])
 def final():
@@ -242,7 +254,7 @@ def final():
     if request.method == 'POST':
         labels = request.get_json()['labels']
         images = request.get_json()['images']
-        return prepairResults(images, labels, False)
+        return prepareResults(images, labels, False)
 
     else:
         return render_template('final.html')
