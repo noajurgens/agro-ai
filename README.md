@@ -46,8 +46,8 @@ Additionally, confidence in predictions is calculated using k-fold cross-validat
 
 ## Recent Advances to the Project 
 - Checking and submitting the checkboxes now initiates the active learning process.
-- The checkbox/active learning flow has been seamlessly integrated into the general user experience flow.
-- The professional diagnosis of plants as health "H" or blighted "B" now appears on the final results page.
+- The checkbox/active learning flow has been seamlessly integrated into the general user experience flow. This allows for the user to disagree with predictions the model has made before retraining.
+- The professional diagnosis of plants can now be toggled in the final results page to help the user check the efficiency of their model. This includes highlighting incorrect guesses and showing bounding boxes around blighted areas.
 - Simple yet impactful changes to the user interface to enhance usability and aesthetics.
 
 ## Setting Up the Project Locally
